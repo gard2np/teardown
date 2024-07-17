@@ -85,7 +85,9 @@ function App() {
     e.preventDefault();
 
     try {
-      const res = await axios.post('/.netlify/functions/send-email', JSON.stringify({ email }), {
+      console.log("Sending email to:", email); // 추가 로그
+
+      const res = await axios.post('/.netlify/functions/send-email', { email }, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -93,6 +95,8 @@ function App() {
       setMessage(res.data.message);
       setError('');
     } catch (err) {
+      console.error("Error sending email:", err); // 추가 로그
+
       if (axios.isAxiosError(err)) {
         const serverError = err as AxiosError<{ message: string }>;
         if (serverError && serverError.response) {
@@ -106,7 +110,6 @@ function App() {
       setMessage('');
     }
   };
-
 
   return (
     <MuiThemeProvider theme={theme}>
@@ -268,6 +271,6 @@ function App() {
       </StyledThemeProvider>
     </MuiThemeProvider>
   );
-  }
-  
-  export default App;
+}
+
+export default App;

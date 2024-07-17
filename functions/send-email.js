@@ -8,6 +8,7 @@ exports.handler = async (event, context) => {
 
     // 요청 본문이 있는지 확인하고, 본문을 파싱합니다.
     if (!event.body) {
+      console.log("Event body is missing");
       throw new Error('Request body is missing');
     }
 
