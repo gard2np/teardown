@@ -4,7 +4,7 @@ import styled, { ThemeProvider as StyledThemeProvider } from 'styled-components'
 import { Container, Box, Typography, List, ListItem, Link, TextField, Button, Alert, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import { createTheme, ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -79,15 +79,31 @@ const CustomBox = styled(Box)`
 function App() {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
 
-  const handleSubmit = async (e: { preventDefault: () => void; }) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
-      const res = await axios.post('/.netlify/functions/send-email', { email });
+      const res = await axios.post('/.netlify/functions/send-email', { email }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
       setMessage(res.data.message);
+      setError('');
     } catch (err) {
-      setMessage('Error sending email');
+      if (axios.isAxiosError(err)) {
+        const serverError = err as AxiosError<{ message: string }>;
+        if (serverError && serverError.response) {
+          setError(serverError.response.data.message);
+        } else {
+          setError('Error sending email');
+        }
+      } else {
+        setError('An unexpected error occurred');
+      }
+      setMessage('');
     }
   };
 
@@ -233,6 +249,11 @@ function App() {
                         {message && (
                           <Box mt={4}>
                             <Alert severity="info">{message}</Alert>
+                          </Box>
+                        )}
+                        {error && (
+                          <Box mt={4}>
+                            <Alert severity="error">{error}</Alert>
                           </Box>
                         )}
                       </Box>
