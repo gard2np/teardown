@@ -15,6 +15,7 @@ exports.handler = async (event, context) => {
     const { email } = JSON.parse(event.body);
 
     if (!email) {
+      console.log("Email is missing in the request body");
       return {
         statusCode: 400,
         body: JSON.stringify({ message: 'Email is required' }),
@@ -42,14 +43,18 @@ exports.handler = async (event, context) => {
       ],
     };
 
+    console.log("Sending email to:", email); // 추가 로그
+
     await transporter.sendMail(mailOptions);
+
+    console.log("Email sent successfully"); // 추가 로그
 
     return {
       statusCode: 200,
       body: JSON.stringify({ message: 'Email sent successfully' }),
     };
   } catch (error) {
-    console.error("Error:", error);
+    console.error("Error occurred:", error); // 추가 로그
     return {
       statusCode: 500,
       body: JSON.stringify({ message: 'Failed to send email', error: error.message }),
