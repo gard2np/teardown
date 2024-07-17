@@ -4,9 +4,8 @@ require('dotenv').config();
 
 exports.handler = async (event, context) => {
   try {
-    console.log("Received event:", JSON.stringify(event, null, 2)); // 추가 로그
+    console.log("Received event:", JSON.stringify(event, null, 2));
 
-    // 요청 본문이 있는지 확인하고, 본문을 파싱합니다.
     if (!event.body) {
       console.log("Event body is missing");
       throw new Error('Request body is missing');
@@ -43,18 +42,18 @@ exports.handler = async (event, context) => {
       ],
     };
 
-    console.log("Sending email to:", email); // 추가 로그
+    console.log("Sending email to:", email);
 
     await transporter.sendMail(mailOptions);
 
-    console.log("Email sent successfully"); // 추가 로그
+    console.log("Email sent successfully");
 
     return {
       statusCode: 200,
       body: JSON.stringify({ message: 'Email sent successfully' }),
     };
   } catch (error) {
-    console.error("Error occurred:", error); // 추가 로그
+    console.error("Error occurred:", error);
     return {
       statusCode: 500,
       body: JSON.stringify({ message: 'Failed to send email', error: error.message }),
