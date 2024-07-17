@@ -9,7 +9,7 @@ import axios from 'axios';
 const GlobalStyle = createGlobalStyle`
   body {
     font-family: 'Noto Sans KR', sans-serif;
-    overflow: hidden; /* 스크롤바 없애기 */
+    overflow: auto; /* 스크롤바 없애기 */
   }
 `;
 
@@ -205,33 +205,44 @@ function App() {
                 </Box>
               </CustomAccordionDetails>
             </CustomAccordion>
-            {/* 여기서부터 이메일 폼 추가 */}
-            <Box mt={4} p={2} bgcolor="background.default">
-              <Typography variant="h6" color="primary.main" gutterBottom>
-                이메일로 파일 받기
-              </Typography>
-              <form onSubmit={handleSubmit}>
-                <TextField
-                  label="Email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  fullWidth
-                  margin="normal"
-                />
-                <Box mt={2}>
-                  <Button variant="contained" color="primary" type="submit">
-                    이메일로 파일 보내기
-                  </Button>
+            <CustomAccordion>
+              <CustomAccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Typography variant="h6" color="primary.main">이메일로 양식 발송하기</Typography>
+              </CustomAccordionSummary>
+              <CustomAccordionDetails>
+                <Box p={1} bgcolor="background.default">
+                  <List>
+                    <ListItem>
+                      {/* 여기서부터 이메일 폼 추가 */}
+                      <Box mt={1} p={1} bgcolor="background.default">
+                        <form onSubmit={handleSubmit}>
+                          <TextField
+                            label="Email"
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                            fullWidth
+                            margin="normal"
+                          />
+                          <Box mt={2}>
+                            <Button variant="contained" color="primary" type="submit">
+                              이메일로 파일 보내기
+                            </Button>
+                          </Box>
+                        </form>
+                        {message && (
+                          <Box mt={1}>
+                            <Alert severity="info">{message}</Alert>
+                          </Box>
+                        )}
+                      </Box>
+                    </ListItem>
+                  </List>
                 </Box>
-              </form>
-              {message && (
-                <Box mt={4}>
-                  <Alert severity="info">{message}</Alert>
-                </Box>
-              )}
-            </Box>
+              </CustomAccordionDetails>
+            </CustomAccordion>
+            
           </Box>
         </Container>
       </StyledThemeProvider>
