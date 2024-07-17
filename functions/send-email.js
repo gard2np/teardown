@@ -4,7 +4,7 @@ require('dotenv').config();
 
 exports.handler = async (event, context) => {
   try {
-    console.log("Received event:", event);
+    console.log("Received event:", JSON.stringify(event, null, 2)); // 추가 로그
 
     // 요청 본문이 있는지 확인하고, 본문을 파싱합니다.
     if (!event.body) {

@@ -87,8 +87,8 @@ function App() {
     try {
       const res = await axios.post('/.netlify/functions/send-email', JSON.stringify({ email }), {
         headers: {
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       });
       setMessage(res.data.message);
       setError('');
@@ -106,6 +106,7 @@ function App() {
       setMessage('');
     }
   };
+
 
   return (
     <MuiThemeProvider theme={theme}>
