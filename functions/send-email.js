@@ -4,7 +4,6 @@ require('dotenv').config();
 
 exports.handler = async (event, context) => {
   try {
-    // 요청 본문을 파싱합니다.
     const { email } = JSON.parse(event.body);
 
     if (!email) {
