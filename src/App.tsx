@@ -9,7 +9,7 @@ import axios from 'axios';
 const GlobalStyle = createGlobalStyle`
   body {
     font-family: 'Noto Sans KR', sans-serif;
-    overflow: hidden; /* 스크롤바 없애기 */
+    overflow: auto; /* 스크롤바 없애기 */
   }
 `;
 
