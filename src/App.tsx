@@ -85,7 +85,7 @@ function App() {
     e.preventDefault();
 
     try {
-      const res = await axios.post('/.netlify/functions/send-email', { email }, {
+      const res = await axios.post('/.netlify/functions/send-email', JSON.stringify({ email }), {
         headers: {
           'Content-Type': 'application/json'
         }

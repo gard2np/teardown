@@ -4,6 +4,8 @@ require('dotenv').config();
 
 exports.handler = async (event, context) => {
   try {
+    console.log("Received event:", event);
+
     // 요청 본문이 있는지 확인하고, 본문을 파싱합니다.
     if (!event.body) {
       throw new Error('Request body is missing');
@@ -46,6 +48,7 @@ exports.handler = async (event, context) => {
       body: JSON.stringify({ message: 'Email sent successfully' }),
     };
   } catch (error) {
+    console.error("Error:", error);
     return {
       statusCode: 500,
       body: JSON.stringify({ message: 'Failed to send email', error: error.message }),
