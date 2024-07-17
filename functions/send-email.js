@@ -1,10 +1,11 @@
-import { createTransport } from 'nodemailer';
+const nodemailer = require('nodemailer');
+const path = require('path');
 require('dotenv').config();
 
-export async function handler(event, context) {
+exports.handler = async (event, context) => {
   const { email } = JSON.parse(event.body);
 
-  const transporter = createTransport({
+  const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
       user: process.env.EMAIL_USER,
@@ -37,4 +38,4 @@ export async function handler(event, context) {
       body: JSON.stringify({ message: 'Failed to send email', error: error.toString() }),
     };
   }
-}
+};
