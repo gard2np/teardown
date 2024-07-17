@@ -268,6 +268,6 @@ function App() {
       </StyledThemeProvider>
     </MuiThemeProvider>
   );
-}
-
-export default App;
+  }
+  
+  export default App;
