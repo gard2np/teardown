@@ -282,7 +282,7 @@ function App() {
                     <List>
                       <ListItem>
                         <Link href="https://www.jbcorporation.com/index/download.php?file=sfy_form.docx&target_Dir=./index/file" target="_blank" rel="noopener noreferrer" color="secondary.main">
-                          다운로드
+                          양식 다운로드
                         </Link>
                       </ListItem>
                     </List>
@@ -291,37 +291,13 @@ function App() {
               </CustomAccordion>
               <CustomAccordion>
                 <CustomAccordionSummary expandIcon={<ExpandMoreIcon />}>
-                  <Typography variant="h6" color="primary.main">이메일로 양식 보내기</Typography>
+                  <Typography variant="h6" color="primary.main">JB 홈페이지</Typography>
                 </CustomAccordionSummary>
                 <CustomAccordionDetails>
                   <Box p={1} bgcolor="background.default" display="flex" justifyContent="center">
-                    <List>
-                      <ListItem>
-                        <Box mt={1} p={2} bgcolor="background.default" display="flex" flexDirection="column" alignItems="center">
-                          <form onSubmit={handleSubmit}>
-                            <FormContainer>
-                              <FormField
-                                label="Email"
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
-                                fullWidth
-                                margin="normal"
-                              />
-                              <SubmitButton variant="contained" color="primary" type="submit">
-                                이메일로 파일 보내기
-                              </SubmitButton>
-                            </FormContainer>
-                          </form>
-                          {message && (
-                            <AlertContainer>
-                              <Alert severity="info">{message}</Alert>
-                            </AlertContainer>
-                          )}
-                        </Box>
-                      </ListItem>
-                    </List>
+                    <Button variant="contained" color="primary" onClick={() => window.open('https://www.jbcorporation.com/index/service_09.php', '_blank')}>
+                    JB 홈페이지 바로가기
+                    </Button>
                   </Box>
                 </CustomAccordionDetails>
               </CustomAccordion>
