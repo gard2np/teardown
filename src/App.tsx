@@ -128,6 +128,13 @@ const FooterContainer = styled.footer`
   font-size: 12px;
 `;
 
+const AlertContainer = styled(Box)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+`;
+
 function App() {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
@@ -290,7 +297,7 @@ function App() {
                   <Box p={1} bgcolor="background.default" display="flex" justifyContent="center">
                     <List>
                       <ListItem>
-                        <Box mt={1} p={2} bgcolor="background.default" display="flex" justifyContent="center">
+                        <Box mt={1} p={2} bgcolor="background.default" display="flex" flexDirection="column" alignItems="center">
                           <form onSubmit={handleSubmit}>
                             <FormContainer>
                               <FormField
@@ -308,9 +315,9 @@ function App() {
                             </FormContainer>
                           </form>
                           {message && (
-                            <Box mt={1}>
+                            <AlertContainer>
                               <Alert severity="info">{message}</Alert>
-                            </Box>
+                            </AlertContainer>
                           )}
                         </Box>
                       </ListItem>
