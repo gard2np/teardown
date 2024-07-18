@@ -1,15 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createGlobalStyle } from 'styled-components';
 import styled, { ThemeProvider as StyledThemeProvider } from 'styled-components';
 import { Container, Box, Typography, List, ListItem, Link, TextField, Button, Alert, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import { createTheme, ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 
 const GlobalStyle = createGlobalStyle`
   body {
     font-family: 'Noto Sans KR', sans-serif;
-    overflow: auto; /* 스크롤바 없애기 */
+    overflow: auto; /* 스크롤 가능 */
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+
+  body::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari, and Opera */
   }
 `;
 
@@ -76,200 +82,251 @@ const CustomBox = styled(Box)`
   background-color: ${({ theme }) => theme.palette.background.default};
 `;
 
+const ResponsiveImage = styled.img`
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: auto;
+
+  @media (min-width: 501px) {
+    max-width: 70%;
+    height: auto;
+    display: block;
+    margin: auto;
+  }
+`;
+
+const FormContainer = styled(Box)`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+
+  @media (min-width: 501px) {
+    flex-direction: row;
+  }
+`;
+
+const FormField = styled(TextField)`
+  flex: 1;
+`;
+
+const SubmitButton = styled(Button)`
+  height: fit-content;
+`;
+
+const PageContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  min-height: 90vh;
+`;
+
+const FooterContainer = styled.footer`
+  width: 100%;
+  text-align: center;
+  padding: 35px 0 0 0;
+  font-size: 12px;
+`;
+
 function App() {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
+  const [imageSrc, setImageSrc] = useState('/logic2.png');
+  const [isSS1, setIsSS1] = useState("안전조치협의서 접수 안내");
+  const [isSS2, setIsSS2] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 500) {
+        setImageSrc('/logic2.png');
+        setIsSS1("안전조치협의서");
+        setIsSS2("접수 안내");
+      } else {
+        setImageSrc('/logic1.png');
+        setIsSS1("안전조치협의서 접수 안내");
+        setIsSS2("");
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  const handleSubmit = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
 
     try {
-      console.log("Sending email to:", email); // 추가 로그
-
-      const res = await axios.post('/.netlify/functions/send-email', { email }, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      const res = await axios.post('/.netlify/functions/send-email', { email });
       setMessage(res.data.message);
-      setError('');
     } catch (err) {
-      console.error("Error sending email:", err); // 추가 로그
-
-      if (axios.isAxiosError(err)) {
-        const serverError = err as AxiosError<{ message: string }>;
-        if (serverError && serverError.response) {
-          setError(serverError.response.data.message);
-        } else {
-          setError('Error sending email');
-        }
-      } else {
-        setError('An unexpected error occurred');
-      }
-      setMessage('');
+      setMessage('Error sending email');
     }
   };
 
   return (
     <MuiThemeProvider theme={theme}>
-      <StyledThemeProvider theme={theme}>
-        <GlobalStyle />
-        <Container>
-          <Box
-            component="header"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            height="10vh"
-            bgcolor="primary.main"
-            color="white"
-            mb={1}
-            py={1}  /* 위와 아래 여백 추가 */
-          >
-            <Typography variant="h4" component="h1" align="center">
-              안전조치협의서<br/> 접수 안내
-            </Typography>
-          </Box>
-          <Box component="main" mt={4}>
-            <Box mb={4}>
-              <Typography variant="h6" gutterBottom color="primary.main">
-                도시가스배관 안전조치 협의서란?
+        <PageContainer>
+        <StyledThemeProvider theme={theme}>
+          <GlobalStyle />
+          <Container>
+            <Box
+              component="header"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              height="10vh"
+              bgcolor="primary.main"
+              color="white"
+              mb={1}
+              py={1}  /* 위와 아래 여백 추가 */
+            >
+              <Typography variant="h4" component="h1" align="center">
+                {isSS1} <br /> {isSS2}
               </Typography>
-              <CustomBox>
-                <Typography variant="body1" color="text.primary">
-                  도시가스사업법 시행규칙 제48조의2(건축물 공사에 따른 안전조치 등) 및
-                  『건축물관리법 시행령 일부개정령, 대통령령 제34093호』, 『건축물관리법 시행규칙
-                  일부개정령, 국토교통부령 제1298호』에 따라 건축물 해체공사 관계자는 도시가스회사로부터
-                  안전조치 협의서 발급 후 허가권자에게 제출해야 합니다.
-                </Typography>
-              </CustomBox>
             </Box>
-            <CustomAccordion>
-              <CustomAccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography variant="h6" color="primary.main">안전조치협의서 제출 방법</Typography>
-              </CustomAccordionSummary>
-              <CustomAccordionDetails>
-                <Box p={2} bgcolor="background.default">
-                  <Typography variant="body1" color="text.secondary">
-                    (제출 방법에 대한 구체적인 내용)
+            <Box component="main" mt={4}>
+              <Box mb={4}>
+                <Typography variant="h6" gutterBottom color="primary.main">
+                  도시가스배관 안전조치 협의서란?
+                </Typography>
+                <CustomBox>
+                  <Typography variant="body1" color="text.primary">
+                    도시가스사업법 시행규칙 제48조의2(건축물 공사에 따른 안전조치 등) 및
+                    『건축물관리법 시행령 일부개정령, 대통령령 제34093호』, 『건축물관리법 시행규칙
+                    일부개정령, 국토교통부령 제1298호』에 따라 건축물 해체공사 관계자는 도시가스회사로부터
+                    안전조치 협의서 발급 후 허가권자에게 제출해야 합니다.
                   </Typography>
-                </Box>
-              </CustomAccordionDetails>
-            </CustomAccordion>
-            <CustomAccordion>
-              <CustomAccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography variant="h6" color="primary.main">기타 안내사항</Typography>
-              </CustomAccordionSummary>
-              <CustomAccordionDetails>
-                <Box p={2} bgcolor="background.default">
-                  <NumberedList>
-                    <NumberedListItem>
-                      <Typography variant="body1" color="text.secondary">
-                        아래 협의서 양식을 다운로드하여 접수 E-mail 주소로 보내주시기 바랍니다.
-                      </Typography>
-                    </NumberedListItem>
-                    <NumberedListItem>
-                      <Typography variant="body1" color="text.secondary">
-                        협의서 필수 기입 내용은 협의서 양식을 참고하시기 바랍니다.
-                      </Typography>
-                    </NumberedListItem>
-                    <NumberedListItem>
-                      <Typography variant="body1" color="text.secondary">
-                        도시가스 시설이 없는 건축물의 경우에도 반드시 접수해 주셔야 합니다.
-                      </Typography>
-                    </NumberedListItem>
-                    <NumberedListItem>
-                      <Typography variant="body1" color="text.secondary">
-                        접수 후 회신까지 영업일 기준 5일 정도 소요됩니다.
-                      </Typography>
-                    </NumberedListItem>
-                  </NumberedList>
-                </Box>
-              </CustomAccordionDetails>
-            </CustomAccordion>
-            <CustomAccordion>
-              <CustomAccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography variant="h6" color="primary.main">접수 E-mail 주소 및 문의 연락처</Typography>
-              </CustomAccordionSummary>
-              <CustomAccordionDetails>
-                <Box p={2} bgcolor="background.default">
-                  <List>
-                    <ListItem>
-                      <Typography variant="body1" color="text.secondary">jbsfy@jbcorporation.com</Typography>
-                    </ListItem>
-                    <ListItem>
-                      <Typography variant="body1" color="text.secondary">
-                        협의서 접수 문의 <br/>
-                        <Link href="tel:041-530-1984" color="secondary.main">041-530-1984</Link> <br/>
-                        <Link href="tel:041-530-1987" color="secondary.main">041-530-1987</Link>
-                      </Typography>
-                    </ListItem>
-                  </List>
-                </Box>
-              </CustomAccordionDetails>
-            </CustomAccordion>
-            <CustomAccordion>
-              <CustomAccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography variant="h6" color="primary.main">협의서 양식 다운로드</Typography>
-              </CustomAccordionSummary>
-              <CustomAccordionDetails>
-                <Box p={2} bgcolor="background.default">
-                  <List>
-                    <ListItem>
-                      <Link href="https://www.jbcorporation.com/index/download.php?file=sfy_form.docx&target_Dir=./index/file" target="_blank" rel="noopener noreferrer" color="secondary.main">
-                        다운로드
-                      </Link>
-                    </ListItem>
-                  </List>
-                </Box>
-              </CustomAccordionDetails>
-            </CustomAccordion>
-            <CustomAccordion>
-              <CustomAccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography variant="h6" color="primary.main">이메일로 양식 보내기</Typography>
-              </CustomAccordionSummary>
-              <CustomAccordionDetails>
-                <Box p={2} bgcolor="background.default">
-                  <List>
-                    <ListItem>
-                      <Box mt={1} p={2} bgcolor="background.default">
-                        <form onSubmit={handleSubmit}>
-                          <TextField
-                            label="Email"
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                            fullWidth
-                            margin="normal"
-                          />
-                          <Box mt={2}>
-                            <Button variant="contained" color="primary" type="submit">
-                              이메일로 파일 보내기
-                            </Button>
-                          </Box>
-                        </form>
-                        {message && (
-                          <Box mt={4}>
-                            <Alert severity="info">{message}</Alert>
-                          </Box>
-                        )}
-                        {error && (
-                          <Box mt={4}>
-                            <Alert severity="error">{error}</Alert>
-                          </Box>
-                        )}
-                      </Box>
-                    </ListItem>
-                  </List>
-                </Box>
-              </CustomAccordionDetails>
-            </CustomAccordion>
-          </Box>
-        </Container>
-      </StyledThemeProvider>
-    </MuiThemeProvider>
+                </CustomBox>
+              </Box>
+              <CustomAccordion>
+                <CustomAccordionSummary expandIcon={<ExpandMoreIcon />}>
+                  <Typography variant="h6" color="primary.main">안전조치협의서 제출 방법</Typography>
+                </CustomAccordionSummary>
+                <CustomAccordionDetails>
+                  <Box p={2} bgcolor="background.default">
+                    <Typography variant="body1" color="text.secondary">
+                      <ResponsiveImage src={imageSrc} alt="logic" />
+                    </Typography>
+                  </Box>
+                </CustomAccordionDetails>
+              </CustomAccordion>
+              <CustomAccordion>
+                <CustomAccordionSummary expandIcon={<ExpandMoreIcon />}>
+                  <Typography variant="h6" color="primary.main">기타 안내사항</Typography>
+                </CustomAccordionSummary>
+                <CustomAccordionDetails>
+                  <Box p={2} bgcolor="background.default">
+                    <NumberedList>
+                      <NumberedListItem>
+                        <Typography variant="body1" color="text.secondary">
+                          아래 협의서 양식을 다운로드하여 접수 E-mail 주소로 보내주시기 바랍니다.
+                        </Typography>
+                      </NumberedListItem>
+                      <NumberedListItem>
+                        <Typography variant="body1" color="text.secondary">
+                          협의서 필수 기입 내용은 협의서 양식을 참고하시기 바랍니다.
+                        </Typography>
+                      </NumberedListItem>
+                      <NumberedListItem>
+                        <Typography variant="body1" color="text.secondary">
+                          도시가스 시설이 없는 건축물의 경우에도 반드시 접수해 주셔야 합니다.
+                        </Typography>
+                      </NumberedListItem>
+                      <NumberedListItem>
+                        <Typography variant="body1" color="text.secondary">
+                          접수 후 회신까지 영업일 기준 5일 정도 소요됩니다.
+                        </Typography>
+                      </NumberedListItem>
+                    </NumberedList>
+                  </Box>
+                </CustomAccordionDetails>
+              </CustomAccordion>
+              <CustomAccordion>
+                <CustomAccordionSummary expandIcon={<ExpandMoreIcon />}>
+                  <Typography variant="h6" color="primary.main">접수 E-mail 주소 및 문의 연락처</Typography>
+                </CustomAccordionSummary>
+                <CustomAccordionDetails>
+                  <Box p={2} bgcolor="background.default">
+                    <List>
+                      <ListItem>
+                        <Typography variant="body1" color="text.secondary">jbsfy@jbcorporation.com</Typography>
+                      </ListItem>
+                      <ListItem>
+                        <Typography variant="body1" color="text.secondary">
+                          협의서 접수 문의 <br/>
+                          <Link href="tel:041-530-1984" color="secondary.main">041-530-1984</Link> <br/>
+                          <Link href="tel:041-530-1987" color="secondary.main">041-530-1987</Link>
+                        </Typography>
+                      </ListItem>
+                    </List>
+                  </Box>
+                </CustomAccordionDetails>
+              </CustomAccordion>
+              <CustomAccordion>
+                <CustomAccordionSummary expandIcon={<ExpandMoreIcon />}>
+                  <Typography variant="h6" color="primary.main">협의서 양식 다운로드</Typography>
+                </CustomAccordionSummary>
+                <CustomAccordionDetails>
+                  <Box p={2} bgcolor="background.default">
+                    <List>
+                      <ListItem>
+                        <Link href="https://www.jbcorporation.com/index/download.php?file=sfy_form.docx&target_Dir=./index/file" target="_blank" rel="noopener noreferrer" color="secondary.main">
+                          다운로드
+                        </Link>
+                      </ListItem>
+                    </List>
+                  </Box>
+                </CustomAccordionDetails>
+              </CustomAccordion>
+              <CustomAccordion>
+                <CustomAccordionSummary expandIcon={<ExpandMoreIcon />}>
+                  <Typography variant="h6" color="primary.main">이메일로 양식 보내기</Typography>
+                </CustomAccordionSummary>
+                <CustomAccordionDetails>
+                  <Box p={1} bgcolor="background.default" display="flex" justifyContent="center">
+                    <List>
+                      <ListItem>
+                        <Box mt={1} p={2} bgcolor="background.default" display="flex" justifyContent="center">
+                          <form onSubmit={handleSubmit}>
+                            <FormContainer>
+                              <FormField
+                                label="Email"
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                                fullWidth
+                                margin="normal"
+                              />
+                              <SubmitButton variant="contained" color="primary" type="submit">
+                                이메일로 파일 보내기
+                              </SubmitButton>
+                            </FormContainer>
+                          </form>
+                          {message && (
+                            <Box mt={1}>
+                              <Alert severity="info">{message}</Alert>
+                            </Box>
+                          )}
+                        </Box>
+                      </ListItem>
+                    </List>
+                  </Box>
+                </CustomAccordionDetails>
+              </CustomAccordion>
+            </Box>
+          </Container>
+        </StyledThemeProvider>
+    </PageContainer>
+      <FooterContainer>
+        <p>Copyright (c) 2024 JB.co.,LTD.  All right Reserved.</p>
+      </FooterContainer>
+      </MuiThemeProvider>
+    
   );
 }
 
