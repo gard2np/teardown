@@ -34,17 +34,27 @@ exports.handler = async (event, context) => {
       to: email,
       subject: '안전조치 협의서 파일 전송',
       text: '본 메일은 발신 전용입니다.첨부 양식을 확인해주시기 바랍니다.',
-      attachments: [
-        {
-          filename: 'sfy_form.docx',
-          path: path.join(__dirname, 'sfy_form.docx'), // 상대 경로로 변경
-        },
-      ],
+      attachments: [],
     };
 
-    console.log("Sending email to:", email);
+    const relativePath = path.join(__dirname, 'sfy_form.docx');
+    const absolutePath = path.resolve('/var/task/sfy_form.docx');
 
-    await transporter.sendMail(mailOptions);
+    try {
+      mailOptions.attachments.push({ filename: 'sfy_form.docx', path: relativePath });
+      console.log(`Attempting to attach file from relative path: ${relativePath}`);
+      await transporter.sendMail(mailOptions);
+    } catch (relativeError) {
+      console.error(`Failed to attach file from relative path: ${relativeError.message}`);
+      try {
+        mailOptions.attachments = [{ filename: 'sfy_form.docx', path: absolutePath }];
+        console.log(`Attempting to attach file from absolute path: ${absolutePath}`);
+        await transporter.sendMail(mailOptions);
+      } catch (absoluteError) {
+        console.error(`Failed to attach file from absolute path: ${absoluteError.message}`);
+        throw absoluteError;
+      }
+    }
 
     console.log("Email sent successfully");
 

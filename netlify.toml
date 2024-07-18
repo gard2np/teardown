@@ -3,3 +3,11 @@
 
 [[plugins]]
   package = "@netlify/plugin-functions-install-core"
+
+[[redirects]]
+  from = "/.netlify/functions/send-email"
+  to = "/functions/send-email"
+  status = 200
+
+[functions]
+  included_files = ["functions/sfy_form.docx"]
