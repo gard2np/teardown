@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { createGlobalStyle } from 'styled-components';
 import styled, { ThemeProvider as StyledThemeProvider } from 'styled-components';
-import { Container, Box, Typography, List, ListItem, Link, TextField, Button, Alert, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+import { Container, Box, Typography, List, ListItem, Link, Button, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import { createTheme, ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import axios from 'axios';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -96,25 +95,6 @@ const ResponsiveImage = styled.img`
   }
 `;
 
-const FormContainer = styled(Box)`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-
-  @media (min-width: 501px) {
-    flex-direction: row;
-  }
-`;
-
-const FormField = styled(TextField)`
-  flex: 1;
-`;
-
-const SubmitButton = styled(Button)`
-  height: fit-content;
-`;
-
 const PageContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -128,16 +108,8 @@ const FooterContainer = styled.footer`
   font-size: 12px;
 `;
 
-const AlertContainer = styled(Box)`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 10px;
-`;
 
 function App() {
-  const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
   const [imageSrc, setImageSrc] = useState('/logic2.png');
   const [isSS1, setIsSS1] = useState("안전조치협의서 접수 안내");
   const [isSS2, setIsSS2] = useState("");
@@ -162,17 +134,6 @@ function App() {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
-
-  const handleSubmit = async (e: { preventDefault: () => void; }) => {
-    e.preventDefault();
-
-    try {
-      const res = await axios.post('/.netlify/functions/send-email', { email });
-      setMessage(res.data.message);
-    } catch (err) {
-      setMessage('Error sending email');
-    }
-  };
 
   return (
     <MuiThemeProvider theme={theme}>
