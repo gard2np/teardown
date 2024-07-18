@@ -37,7 +37,7 @@ exports.handler = async (event, context) => {
       attachments: [
         {
           filename: 'sfy_form.docx',
-          path: path.resolve(__dirname, 'sfy_form.docx'), // 절대 경로로 변경
+          path: path.join(__dirname, 'sfy_form.docx'), // 상대 경로로 변경
         },
       ],
     };
